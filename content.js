@@ -1,17 +1,37 @@
+let filterEnabled = true;
+
+chrome.storage.local.get(['filterEnabled'], (result) => {
+    if (result.hasOwnProperty('filterEnabled')) {
+        filterEnabled = result.filterEnabled;
+    } else {
+        chrome.storage.local.set({ filterEnabled: true });
+    }
+    filterPageMessages();
+});
+
 function filterGPTMessages(messages) {
     const filteredMessages = messages.filter(message => {
         const lowerCaseMessage = message.toLowerCase();
         const gptPhrases = [
-            "i asked gpt to write",
-            "i requested gpt to write",
-            "i got gpt to write",
-            "i had gpt write",
+            // "the",
+              "i asked gpt to write",
+              "i requested gpt to write",
+              "i got gpt to write",
+              "i had gpt write",
         ];
 
         return !gptPhrases.some(phrase => lowerCaseMessage.includes(phrase));
     });
 
     return filteredMessages;
+}
+
+function toggleMessageDisplay(container, message) {
+    if (filterEnabled && !filterGPTMessages([message]).length) {
+        container.style.display = 'none';
+    } else {
+        container.style.display = '';
+    }
 }
 
 function filterPageMessages() {
@@ -21,14 +41,17 @@ function filterPageMessages() {
 
     messageContainers.forEach(container => {
         const message = container.innerText || container.textContent;
-
-        if (!filterGPTMessages([message]).length) {
-            container.style.display = 'none';
-        }
+        toggleMessageDisplay(container, message);
     });
 }
 
-// Observe and apply the filter when new content is added
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'toggleFilter') {
+        filterEnabled = request.filterEnabled;
+        filterPageMessages();
+    }
+});
+
 const targetNode = document.body;
 const config = { childList: true, subtree: true };
 
@@ -43,4 +66,3 @@ const observerCallback = (mutationsList, observer) => {
 const observer = new MutationObserver(observerCallback);
 observer.observe(targetNode, config);
 
-filterPageMessages();
