@@ -10,8 +10,11 @@ chrome.storage.local.get(['filterEnabled'], (result) => {
 });
 
 function filterGPTMessages(messages) {
-    const gptPattern = /(?:I|we)\s+(?:asked|requested|consulted)\s+(?:GPT|ChatGPT|GPT-4|GPT4|chat-GPT|chatGPT|gpt4|gpt-4|chat-gpt)\s+(?:to\s+write|for|to\s+create|to\s+generate|to\s+come\s+up\s+with)/gi;
-    return messages.filter((message) => gptPattern.test(message));
+    const gptPattern = /(?:I|we)\s+(?:asked|requested|consulted)\s+(?:GPT|ChatGPT|GPT-4|GPT4|chat-GPT|chatGPT|gpt4|gpt-4|chat-gpt)\s+/i;
+    return messages.filter((message) => {
+        const regex = new RegExp(gptPattern);
+        return !regex.test(message);
+    });
 }
 
 
