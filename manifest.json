@@ -1,22 +1,24 @@
 {
-    "manifest_version": 2,
-    "name": "GPT Message Filter",
-    "version": "1.0",
-    "description": "Filters out social messages containing phrases similar to 'I asked GPT to write...'",
-    "permissions": ["activeTab"],
-    "content_scripts": [
-      {
-        "matches": ["*://*/*"],
-        "js": ["content.js"]
-      }
-    ],
-    "icons": {
+  "manifest_version": 3,
+  "name": "GPT Message Filter",
+  "version": "1.0",
+  "description": "Filters out social messages containing phrases similar to 'I asked GPT to write...'",
+  "permissions": ["scripting"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
       "48": "icon48.png",
       "128": "icon128.png"
-    },
-    "browser_action": {
-      "default_icon": "icon48.png",
-      "default_title": "GPT Message Filter"
     }
-  }
-  
+  },
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.linkedin.com/*", "*://*.twitter.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
