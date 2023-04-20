@@ -17,14 +17,37 @@ function filterGPTMessages(messages) {
     });
 }
 
+function createHiddenPostNotification(post, platform) {
+    const notification = document.createElement('div');
+    notification.className = 'hidden-post-notification';
+    notification.textContent = 'This post was hidden because it contained a filtered phrase. ';
+  
+    const showButton = document.createElement('button');
+    showButton.textContent = 'Show post';
+    showButton.addEventListener('click', () => {
+      post.style.display = '';
+      notification.remove();
+    });
+  
+    notification.appendChild(showButton);
+  
+    return notification;
+}
+  
+  
 
 function toggleMessageDisplay(container, message, platform) {
+    const originalContainer = container;
+
     if (platform === 'linkedin') {
         container = container.closest('.feed-shared-update-v2');
     }
 
     if (filterEnabled && !filterGPTMessages([message]).length) {
         container.style.display = 'none';
+
+        const hiddenPostNotification = createHiddenPostNotification(container, platform);
+        container.parentElement.insertBefore(hiddenPostNotification, container);
     } else {
         container.style.display = '';
     }
